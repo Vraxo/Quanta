@@ -16,13 +16,8 @@ public partial class MainScene : Node
             },
             OnUpdate = (textBox) =>
             {
-                float x = Window.Width / 2;
-                float y = Window.Height * 0.1f ;
-                textBox.Position = new(x, y);
-        
-                float width = Window.Width * 0.75f;
-                float height = Window.Height * 0.1f;
-                textBox.Size = new(width, height);
+                textBox.Position = Window.Resolution * new Vector2(0.5f, 0.1f);
+                textBox.Size = Window.Resolution * new Vector2(0.75f, 0.1f);
             },
         });
 
@@ -32,7 +27,7 @@ public partial class MainScene : Node
         {
             OnUpdate = (grid) =>
             {
-                grid.Scale = new Vector2(Window.Width, Window.Height) / new Vector2(360, 480);
+                grid.Scale = Window.Resolution / Window.OriginalResolution;
             }
         });
 
@@ -57,7 +52,6 @@ public partial class MainScene : Node
         grid.AddChild(new NumberButton() { Text = "." });
         grid.AddChild(new NumberButton() { Text = "0" });
         grid.AddChild(new NumberButton() { Text = "=" });
-
 
         //AddChild(new NumberButton
         //{

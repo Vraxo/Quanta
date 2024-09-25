@@ -4,15 +4,14 @@ namespace Quanta;
 
 public class GridContainer : Node2D
 {
-    public Vector2 Cells { get; set; } = new(4, 4);
-    public bool ShowGrid = true;
+    public Vector2 Cells { get; set; } = new(4);
+    public bool ShowGrid { get; set; } = true;
     public Vector2 ItemSize { get; set; } = new(80, 64);
     public Vector2 CellOrigin { get; set; } = Vector2.Zero;
     public OriginPreset CellOriginPreset { get; set; } = OriginPreset.Center;
     public Action<GridContainer> OnUpdate = (button) => { };
 
-    // Scaling factor applied to the grid and children
-    //public Vector2 Scale = Vector2.One;
+    public Vector2 Spacing { get; set; } = new(10, 10);
 
     public override void Update()
     {
@@ -21,9 +20,8 @@ public class GridContainer : Node2D
         Draw();
         UpdateLayout();
 
-        // Apply scaling to the overall size of the grid
         Size = ItemSize * Cells * Scale;
-        Position = new Vector2(Window.Width / 2, Window.Height / 2);
+        Position = new(Window.Resolution.X / 2, Window.Resolution.Y * 0.6f);
 
         base.Update();
     }

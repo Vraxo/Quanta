@@ -5,19 +5,20 @@ namespace Quanta;
 public class ThemeLoader
 {
     public Dictionary<string, Color> Colors = new()
-    {
-        { "Background", new(16, 16, 16, 255) },
-        { "DefaultFill", new(42, 42, 42, 255) },
-        { "DefaultOutline", new(61, 61, 61, 255) },
-        { "HoverFill", new(50, 50, 50, 255) },
-        { "HoverOutline", new(71, 71, 71, 255) },
-        { "Accent", new(71, 114, 179, 255) },
-        { "PressedOutline", new(61, 61, 61, 255) },
-        { "TextBoxPressedFill", new(68, 68, 68, 255) },
-        { "SliderEmptyFill", new(101, 101, 101, 255) },
-        { "SliderFillColor", new(71, 114, 179, 255) },
-        { "Text", new(255, 255, 255, 255) }
-    };
+{
+    { "Background", new(30, 30, 30, 255) },         // Darker background
+    { "DefaultFill", new(45, 45, 45, 255) },        // Darker fill for default elements
+    { "DefaultOutline", new(70, 70, 70, 255) },     // Outline color for default elements
+    { "HoverFill", new(55, 55, 55, 255) },          // Fill color when hovered
+    { "HoverOutline", new(90, 90, 90, 255) },       // Outline color when hovered
+    { "Accent", new(0, 122, 204, 255) },             // Blue accent color
+    { "PressedOutline", new(80, 80, 80, 255) },     // Outline color when pressed
+    { "TextBoxPressedFill", new(75, 75, 75, 255) }, // Fill color for pressed text boxes
+    { "SliderEmptyFill", new(90, 90, 90, 255) },    // Empty slider fill
+    { "SliderFillColor", new(0, 122, 204, 255) },    // Slider fill color matching the accent
+    { "Text", new(220, 220, 220, 255) }              // Light gray text for readability
+};
+
 
     private static ThemeLoader? instance;
 
@@ -34,7 +35,7 @@ public class ThemeLoader
     {
         //Save();
         string name = File.ReadAllText("Resources/Themes/Theme.txt");
-        Load(name);
+        //Load(name);
     }
 
     private void Save()

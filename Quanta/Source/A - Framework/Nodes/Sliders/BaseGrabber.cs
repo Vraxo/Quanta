@@ -152,11 +152,11 @@ public abstract class BaseGrabber : ClickableRectangle
     //
     //    Vector2 temporaryPosition = new(x, y);
     //
-    //    DrawOutline(temporaryPosition);
-    //    DrawInside(temporaryPosition);
+    //    DrawShapeOutline(temporaryPosition);
+    //    DrawShapeInside(temporaryPosition);
     //}
     //
-    //private void DrawInside(Vector2 position)
+    //private void DrawShapeInside(Vector2 position)
     //{
     //    Rectangle rectangle = new()
     //    {
@@ -171,7 +171,7 @@ public abstract class BaseGrabber : ClickableRectangle
     //        Style.Current.FillColor);
     //}
     //
-    //private void DrawOutline(Vector2 position)
+    //private void DrawShapeOutline(Vector2 position)
     //{
     //    if (Style.Current.OutlineThickness < 0)
     //    {

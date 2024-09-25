@@ -10,17 +10,16 @@ public class Node2D : Node
     {
         get
         {
-            // Check if the parent is a Node2D
             if (Parent is Node2D node2DParent)
             {
                 return node2DParent.Scale;
             }
-            return _scale; // Return the local scale if the parent is not Node2D
+            return _scale;
         }
 
         set
         {
-            _scale = value; // Set the local scale
+            _scale = value;
         }
     }
 

@@ -4,6 +4,6 @@ namespace Quanta;
 
 public static class Window
 {
-    public static int Width => Raylib.GetScreenWidth();
-    public static int Height => Raylib.GetScreenHeight();
+    public static Vector2 OriginalResolution = Vector2.Zero;
+    public static Vector2 Resolution => new(Raylib.GetScreenWidth(), Raylib.GetScreenHeight());
 }

@@ -293,16 +293,16 @@ public class Button : ClickableRectangle
 
     private void DrawShape()
     {
-        DrawOutline();
-        DrawInside();
+        DrawShapeOutline();
+        DrawShapeInside();
     }
 
-    private void DrawInside()
+    private void DrawShapeInside()
     {
         Rectangle rectangle = new()
         {
-            Position = GlobalPosition - Origin,
-            Size = Size
+            Position = GlobalPosition - Origin * Scale,
+            Size = Size * Scale
         };
 
         Raylib.DrawRectangleRounded(
@@ -312,19 +312,17 @@ public class Button : ClickableRectangle
             Style.Current.FillColor);
     }
 
-    private void DrawOutline()
+    private void DrawShapeOutline()
     {
         if (Style.Current.OutlineThickness <= 0)
         {
             return;
         }
 
-        Vector2 position = GlobalPosition - Origin;
-
         Rectangle rectangle = new()
         {
-            Position = position,
-            Size = Size
+            Position = GlobalPosition - Origin * Scale,
+            Size = Size * Scale
         };
 
         for (int i = 0; i <= Style.Current.OutlineThickness; i++)

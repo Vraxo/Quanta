@@ -8,10 +8,13 @@ public abstract class ClickableRectangle : Clickable
     {
         Vector2 mousePosition = Raylib.GetMousePosition();
 
-        bool isMouseOver = mousePosition.X > GlobalPosition.X - Origin.X &&
-                           mousePosition.X < GlobalPosition.X + Size.X - Origin.X &&
-                           mousePosition.Y > GlobalPosition.Y - Origin.Y &&
-                           mousePosition.Y < GlobalPosition.Y + Size.Y - Origin.Y;
+        Vector2 scaledOrigin = Scale * Origin;
+        Vector2 scaledSize = Scale * Size;
+
+        bool isMouseOver = mousePosition.X > GlobalPosition.X - scaledOrigin.X &&
+                           mousePosition.X < GlobalPosition.X + scaledSize.X - scaledOrigin.X &&
+                           mousePosition.Y > GlobalPosition.Y - scaledOrigin.Y &&
+                           mousePosition.Y < GlobalPosition.Y + scaledSize.Y - scaledOrigin.Y;
 
         return isMouseOver;
     }

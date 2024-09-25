@@ -20,6 +20,8 @@ public class Program(WindowData windowData, Node rootNode, string[] args)
     {
         SetCurrentDirectory();
 
+        Window.OriginalResolution = windowData.Resolution;
+
         int width = (int)windowData.Resolution.X;
         int height = (int)windowData.Resolution.Y;
 
