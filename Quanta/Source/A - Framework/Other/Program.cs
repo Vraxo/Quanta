@@ -75,7 +75,7 @@ public class Program(WindowData windowData, Node rootNode, string[] args)
     {
         if (Raylib.IsKeyPressed(KeyboardKey.Enter))
         {
-            //Console.Clear();
+            //Console.ClearItems();
 
             Random random = new();
             int r = random.Next(1000);

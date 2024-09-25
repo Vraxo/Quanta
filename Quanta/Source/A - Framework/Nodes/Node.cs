@@ -127,7 +127,7 @@ public class Node
             path = path.Substring("/root".Length);
             Node currentNode = Program.RootNode;
 
-            // Remove leading slash for absolute paths
+            // RemoveItem leading slash for absolute paths
             if (path.StartsWith("/"))
             {
                 path = path.Substring(1);
@@ -258,7 +258,7 @@ public class Node
         return null;
     }
 
-    // Add child
+    // AddItem child
 
     public void AddChild(Node node, string name, bool start = true)
     {

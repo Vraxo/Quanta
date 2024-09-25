@@ -3,6 +3,27 @@
 public class Node2D : Node
 {
     public Vector2 Position { get; set; }  = Vector2.Zero;
+
+    private Vector2 _scale = Vector2.One;
+
+    public Vector2 Scale
+    {
+        get
+        {
+            // Check if the parent is a Node2D
+            if (Parent is Node2D node2DParent)
+            {
+                return node2DParent.Scale;
+            }
+            return _scale; // Return the local scale if the parent is not Node2D
+        }
+
+        set
+        {
+            _scale = value; // Set the local scale
+        }
+    }
+
     public OriginPreset OriginPreset { get; set; } = OriginPreset.Center;
     public bool InheritPosition { get; set; } = true;
     public bool InheritOrigin { get; set; } = false;

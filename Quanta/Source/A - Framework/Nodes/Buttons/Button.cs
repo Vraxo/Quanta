@@ -354,53 +354,6 @@ public class Button : ClickableRectangle
             Style.Current.TextColor);
     }
 
-    //private void DrawOutline()
-    //{
-    //    if (Style.Current.OutlineThickness < 0)
-    //    {
-    //        return;
-    //    }
-    //
-    //    for (int i = 0; i < Style.Current.OutlineThickness; i++)
-    //    {
-    //        Rectangle rectangle = new()
-    //        {
-    //            Position = GlobalPosition - Origin - new Vector2(i, i),
-    //            Size = new(Size.X + i + 0, Size.Y + i + 0)
-    //        };
-    //
-    //        Raylib.DrawRectangleRounded(
-    //            rectangle,
-    //            Style.Current.Roundness,
-    //            (int)Size.Y,
-    //            Style.Current.OutlineColor);
-    //    }
-    //}
-
-    //private Vector2 GetTextPosition()
-    //{
-    //    Vector2 fontDimensions = Raylib.MeasureTextEx(
-    //                                Style.Current.Font,
-    //                                Text,
-    //                                Style.Current.FontSize,
-    //                                1);
-    //
-    //    Vector2 halfFontDimensions = fontDimensions / 2;
-    //    Vector2 center = Size / 2;
-    //
-    //    if (Text == "PlaylistButton")
-    //    {
-    //        Console.WriteLine("origin: " + Origin);
-    //        Console.WriteLine("trigin: " + TextOrigin);
-    //        Console.WriteLine("center: " + center);
-    //    }
-    //
-    //    Vector2 difference = TextOrigin - center;
-    //
-    //    //return GlobalPosition + center - halfFontDimensions - Origin; // best
-    //    return GlobalPosition + center - /*halfFontDimensions*/ - Origin + difference; // second best
-    //}
-
     private Vector2 GetTextPosition()
     {
         // Measure the dimensions of the Text

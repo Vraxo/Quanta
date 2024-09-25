@@ -9,14 +9,15 @@ public class NumberButton : Button
 
     public NumberButton()
     {
-        Size = new(80, 64);
+        //Size = new(80, 64);
+        Size = new(75, 60);
         Style.Roundness = 0.5f;
         Style.FontSize = 32;
     }
 
     public override void Start()
     {
-        mainScene = GetParent<MainScene>();
+        mainScene = GetNode<MainScene>("/root");
 
         LeftClicked += OnLeftClicked;
 
@@ -25,8 +26,8 @@ public class NumberButton : Button
 
     public override void Update()
     {
-        UpdatePosition();
-        UpdateSize();
+        //UpdatePosition();
+        //UpdateSize();
 
         base.Update();
     }

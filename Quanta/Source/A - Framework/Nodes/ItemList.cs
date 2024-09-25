@@ -4,6 +4,8 @@ namespace Quanta;
 
 public class ItemList : ClickableRectangle
 {
+    public static readonly Vector2 DefaultSize = new(250, 150);
+
     public List<Node2D> Items = [];
     public Vector2 ItemSize = new(100, 20);
     public int SliderButtonLayer = 0;
@@ -14,7 +16,7 @@ public class ItemList : ClickableRectangle
     public event EventHandler<int>? StartingIndexChanged;
 
     private int maxItemsShownAtOnce = 0;
-    private int count = 0;
+    private int updateCount = 0;
 
     private int _startingIndex = 0;
     public int StartingIndex
@@ -40,7 +42,7 @@ public class ItemList : ClickableRectangle
 
     public ItemList()
     {
-        Size = new(250, 150);
+        Size = DefaultSize;
         OriginPreset = OriginPreset.TopLeft;
     }
 
@@ -91,7 +93,7 @@ public class ItemList : ClickableRectangle
         base.Update();
     }
 
-    public void Add(Node2D item)
+    public void AddItem(Node2D item)
     {
         item.InheritOrigin = true;
         Items.Add(item);
@@ -100,7 +102,7 @@ public class ItemList : ClickableRectangle
         OnItemCountChanged(this);
     }
 
-    public void Remove(Node2D item)
+    public void RemoveItem(Node2D item)
     {
         Items.Remove(item);
         Children.Remove(item);
@@ -111,10 +113,10 @@ public class ItemList : ClickableRectangle
     public void Remove(int index)
     {
         Node2D item = Items[index];
-        Remove(item);
+        RemoveItem(item);
     }
 
-    public void Clear()
+    public void ClearItems()
     {
         while (Items.Count > 0)
         {
@@ -127,6 +129,8 @@ public class ItemList : ClickableRectangle
         //int newStartingIndex = GetStartingIndexBasedOnSliderValue(e);
         int newStartingIndex = (int)(sender as VerticalSlider).Value;
         StartingIndex = newStartingIndex;
+
+        //StartingIndex = e * maxItemsShownAtOnce; would this work?
     }
 
     private void MinimizeStartingIndex()
@@ -148,11 +152,11 @@ public class ItemList : ClickableRectangle
         return (int)Math.Floor(sliderValue * numItemsBesidesThisPage);
     }
 
-    private void UpdateChildrenActivationAndPosition()
+    private void UpdateItemsActivationAndPosition()
     {
-        if (count != 2)
+        if (updateCount != 2)
         {
-            count++;
+            updateCount++;
             return;
         }
 
@@ -206,7 +210,7 @@ public class ItemList : ClickableRectangle
 
         StartingIndex = newStartingIndex;
 
-        UpdateChildrenActivationAndPosition();
+        UpdateItemsActivationAndPosition();
 
         StartingIndexChanged?.Invoke(this, StartingIndex);
     }
