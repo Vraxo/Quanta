@@ -16,7 +16,7 @@ public partial class VerticalSlider : BaseSlider
         float minPos = GlobalPosition.Y - Origin.Y;
         float maxPos = minPos + Size.Y;
 
-        // Calculate and clamp the percentage
+        // Evaluate and clamp the percentage
         Percentage = Math.Clamp((currentPosition - minPos) / (maxPos - minPos), 0, 1);
     }
 

@@ -4,12 +4,12 @@ public partial class TextBox : ClickableRectangle
 {
     public override void Build()
     {
-        AddChild(new TextBoxShape());
+        AddChild(new Shape());
 
-        AddChild(new TextBoxText());
+        AddChild(new TextDisplayer());
 
-        AddChild(new TextBoxPlaceholderText());
+        AddChild(new PlaceholderTextDisplayer());
 
-        AddChild(new TextBoxCaret(), "Caret");
+        AddChild(new Caret(), "Caret");
     }
 }

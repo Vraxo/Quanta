@@ -75,7 +75,7 @@ public class ItemList : ClickableRectangle
     public override void Start()
     {
         Slider = GetNode<VerticalSlider>("Slider");
-        Slider.PercentageChanged += OnSliderValueChanged;
+        Slider.PercentageChanged += OnSliderPercentageChanged;
         Slider.Layer = Layer + 1;
         Slider.GetNode<Button>("DecrementButton").Layer = Layer + 1;
         Slider.GetNode<Button>("IncrementButton").Layer = Layer + 1;
@@ -124,13 +124,14 @@ public class ItemList : ClickableRectangle
         }
     }
 
-    private void OnSliderValueChanged(object? sender, float e)
+    private void OnSliderPercentageChanged(object? sender, float e)
     {
         //int newStartingIndex = GetStartingIndexBasedOnSliderValue(e);
-        int newStartingIndex = (int)(sender as VerticalSlider).Value;
-        StartingIndex = newStartingIndex;
+        //int newStartingIndex = (int)(sender as VerticalSlider).Value;
+        //StartingIndex = newStartingIndex;
 
-        //StartingIndex = e * maxItemsShownAtOnce; would this work?
+        int numItemsBesidesThisPage = Items.Count - maxItemsShownAtOnce;
+        StartingIndex = (int)(numItemsBesidesThisPage * e);
     }
 
     private void MinimizeStartingIndex()

@@ -4,23 +4,25 @@ namespace Quanta;
 
 public class Button : ClickableRectangle
 {
-    public Vector2 TextPadding { get; set; } = Vector2.Zero;
-    public Vector2 TextOrigin { get; set; } = Vector2.Zero;
-    public OriginPreset TextOriginPreset { get; set; } = OriginPreset.Center;
-    public ButtonStyle Style { get; set; } = new();
-    public bool PressedLeft { get; set; } = false;
-    public bool PressedRight { get; set; } = false;
-    public bool LimitText { get; set; } = false;
-    public float AvailableWidth { get; set; } = 0;
-    public ButtonClickMode LeftClickMode { get; set; } = ButtonClickMode.Limitless;
-    public ButtonClickMode RightClickMode { get; set; } = ButtonClickMode.Limitless;
+    #region [ - - - Properties & Fields - - - ]
+
+    public Vector2         TextPadding      { get; set; } = Vector2.Zero;
+    public Vector2         TextOrigin       { get; set; } = Vector2.Zero;
+    public OriginPreset    TextOriginPreset { get; set; } = OriginPreset.Center;
+    public ButtonStyle     Style            { get; set; } = new();
+    public bool            PressedLeft      { get; set; } = false;
+    public bool            PressedRight     { get; set; } = false;
+    public bool            LimitText        { get; set; } = false;
+    public float           AvailableWidth   { get; set; } = 0;
+    public ButtonClickMode LeftClickMode    { get; set; } = ButtonClickMode.Limitless;
+    public ButtonClickMode RightClickMode   { get; set; } = ButtonClickMode.Limitless;
     public Action<Button> OnUpdate = (button) => { };
 
     public event EventHandler? LeftClicked;
     public event EventHandler? RightClicked;
 
-    private bool alreadyClicked = false;
-    private string displayedText = "";
+    private bool   alreadyClicked = false;
+    private string displayedText  = "";
 
     private string _text = "";
     public string Text
@@ -34,6 +36,10 @@ public class Button : ClickableRectangle
         }
     }
 
+    #endregion
+
+    // Public
+
     public Button()
     {
         Size = new(100, 26);
@@ -44,36 +50,20 @@ public class Button : ClickableRectangle
         OnUpdate(this);
         LimitDisplayedText();
         UpdateTextOrigin();
-        HandleInput();
+        HandleClicks();
         Draw();
         base.Update();
     }
 
-    private void HandleInput()
+    // Click handling
+
+    private void HandleClicks()
     {
         HandleLeftClicks();
         HandleRightClicks();
     }
-
-    private void UpdateTextOrigin()
-    {
-        TextOrigin = TextOriginPreset switch
-        {
-            OriginPreset.Center => Size / 2,
-            OriginPreset.CenterLeft => new(0, Size.Y / 2),
-            OriginPreset.CenterRight => new(Size.X, Size.Y / 2),
-            OriginPreset.TopLeft => new(0, 0),
-            OriginPreset.TopRight => new(Size.X, 0),
-            OriginPreset.TopCenter => new(Size.X / 2, 0),
-            OriginPreset.BottomLeft => new(0, Size.Y),
-            OriginPreset.BottomRight => Size,
-            OriginPreset.BottomCenter => new(Size.X / 2, Size.Y),
-            OriginPreset.None => Origin,
-            _ => Origin,
-        };
-    }
-
-    // Left click
+    
+    // Left click handling
 
     private void HandleLeftClicks()
     {
@@ -174,7 +164,7 @@ public class Button : ClickableRectangle
         }
     }
 
-    // Right click
+    // Right click handling
 
     private void HandleRightClicks()
     {
@@ -278,7 +268,7 @@ public class Button : ClickableRectangle
         }
     }
 
-    // Draw
+    // Drawing
 
     private void Draw()
     {
@@ -352,9 +342,11 @@ public class Button : ClickableRectangle
             Style.Current.TextColor);
     }
 
+    // TextDisplayer positioning
+
     private Vector2 GetTextPosition()
     {
-        // Measure the dimensions of the Text
+        // Measure the dimensions of the TextDisplayer
         Vector2 fontDimensions = Raylib.MeasureTextEx(
             Style.Current.Font,
             Text,
@@ -362,7 +354,7 @@ public class Button : ClickableRectangle
             1
         );
 
-        // Calculate the center of the Button
+        // Evaluate the center of the Button
         Vector2 center = Size / 2;
 
         // Determine the alignment adjustment based on the TextOrigin
@@ -371,11 +363,29 @@ public class Button : ClickableRectangle
             TextOrigin.Y < center.Y ? 0 : TextOrigin.Y > center.Y ? -fontDimensions.Y : -fontDimensions.Y / 2
         );
 
-        // Calculate the Text position based on the alignment and origin
+        // Evaluate the TextDisplayer position based on the alignment and origin
         return GlobalPosition + TextOrigin + alignmentAdjustment - Origin + TextPadding;
     }
 
-    // Text limitation
+    private void UpdateTextOrigin()
+    {
+        TextOrigin = TextOriginPreset switch
+        {
+            OriginPreset.Center => Size / 2,
+            OriginPreset.CenterLeft => new(0, Size.Y / 2),
+            OriginPreset.CenterRight => new(Size.X, Size.Y / 2),
+            OriginPreset.TopLeft => new(0, 0),
+            OriginPreset.TopRight => new(Size.X, 0),
+            OriginPreset.TopCenter => new(Size.X / 2, 0),
+            OriginPreset.BottomLeft => new(0, Size.Y),
+            OriginPreset.BottomRight => Size,
+            OriginPreset.BottomCenter => new(Size.X / 2, Size.Y),
+            OriginPreset.None => Origin,
+            _ => Origin,
+        };
+    }
+
+    // Displayed text truncating
 
     private void LimitDisplayedText()
     {

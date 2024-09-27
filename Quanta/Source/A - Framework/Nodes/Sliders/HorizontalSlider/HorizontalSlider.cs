@@ -21,7 +21,7 @@ public partial class HorizontalSlider : BaseSlider
         float minPos = GlobalPosition.X;
         float maxPos = minPos + Size.X;
 
-        // Calculate and clamp the percentage
+        // Evaluate and clamp the percentage
         Percentage = Math.Clamp((currentPosition - minPos) / (maxPos - minPos), 0, 1);
     }
 

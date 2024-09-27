@@ -4,14 +4,13 @@ namespace Quanta;
 
 public class GridContainer : Node2D
 {
-    public Vector2 Cells { get; set; } = new(4);
-    public bool ShowGrid { get; set; } = true;
-    public Vector2 ItemSize { get; set; } = new(80, 64);
-    public Vector2 CellOrigin { get; set; } = Vector2.Zero;
+    public bool         ShowGrid         { get; set; } = false;
+    public Vector2      Cells            { get; set; } = new(4, 5);
+    public Vector2      ItemSize         { get; set; } = new(80, 64);
+    public Vector2      CellOrigin       { get; set; } = Vector2.Zero;
     public OriginPreset CellOriginPreset { get; set; } = OriginPreset.Center;
-    public Action<GridContainer> OnUpdate = (button) => { };
 
-    public Vector2 Spacing { get; set; } = new(10, 10);
+    public Action<GridContainer> OnUpdate = (button) => { };
 
     public override void Update()
     {
@@ -21,14 +20,14 @@ public class GridContainer : Node2D
         UpdateLayout();
 
         Size = ItemSize * Cells * Scale;
-        Position = new(Window.Resolution.X / 2, Window.Resolution.Y * 0.6f);
+        Position = new(Window.Size.X / 2, Window.Size.Y * 0.65f);
 
         base.Update();
     }
 
     private void Draw()
     {
-        if (!ShowGrid)
+        if (!ShowGrid || !Visible || !ReadyForVisibility)
         {
             return;
         }
@@ -41,7 +40,6 @@ public class GridContainer : Node2D
     {
         for (int i = 0; i <= Cells.X; i++)
         {
-            // Apply scaling to the grid line positions
             Vector2 startPosition = GlobalPosition + new Vector2(i * ItemSize.X * Scale.X, 0) - Origin;
             Vector2 endPosition = GlobalPosition + new Vector2(i * ItemSize.X * Scale.X, Cells.Y * ItemSize.Y * Scale.Y) - Origin;
 
@@ -79,7 +77,7 @@ public class GridContainer : Node2D
             int row = index / (int)Cells.X;
             int col = index % (int)Cells.X;
 
-            // Calculate the position for each child in the grid, applying scaling inversely
+            // Evaluate the position for each child in the grid, applying scaling inversely
             Vector2 childPosition = GlobalPosition - Origin + new Vector2(col * ItemSize.X * Scale.X, row * ItemSize.Y * Scale.Y) + CellOrigin;
 
             // Set the child's global position

@@ -2,14 +2,14 @@
 
 public class NumberButton : Button
 {
-    public int Column = 0;
-    public int Row = 0;
+    public bool IsDigit = true;
 
     private MainScene mainScene;
 
     public NumberButton()
     {
         Size = new(75, 60);
+        //Size = new(60, 60);
         Style.Roundness = 0.5f;
         Style.FontSize = 32;
     }
@@ -25,6 +25,13 @@ public class NumberButton : Button
 
     private void OnLeftClicked(object? sender, EventArgs e)
     {
-        mainScene.GetNode<TextBox>("TextBox").Text += Text;
+        if (IsDigit)
+        {
+            mainScene.GetNode<MathTextBox>("MathTextBox").Insert(Text);
+        }
+        else
+        {
+            mainScene.GetNode<MathTextBox>("MathTextBox").Evaluate();
+        }
     }
 }

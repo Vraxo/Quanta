@@ -4,7 +4,20 @@ public partial class MainScene : Node
 {
     public override void Build()
     {
-        AddChild(new TextBox
+        AddChild(new Label
+        {
+            FontSize = 24,
+            OnUpdate = (label) =>
+            {
+                var mathTextBox = GetNode<MathTextBox>("MathTextBox");
+
+                float x = mathTextBox.Position.X - mathTextBox.Size.X / 2;
+                float y = Window.Size.Y * 0.05f;
+                label.Position = new(x, y);
+              }
+        }, "LastExpressionLabel");
+
+        AddChild(new MathTextBox
         {
             Position = new(196, 48),
             AllowedCharacters = CharacterSet.Mathematics,
@@ -16,26 +29,29 @@ public partial class MainScene : Node
             },
             OnUpdate = (textBox) =>
             {
-                textBox.Position = Window.Resolution * new Vector2(0.5f, 0.1f);
-                textBox.Size = Window.Resolution * new Vector2(0.75f, 0.1f);
+                textBox.Position = Window.Size * new Vector2(0.5f, 0.15f);
+                textBox.Size = Window.Size * new Vector2(0.75f, 0.1f);
             },
         });
-
-        // 7 8 9 x
 
         AddChild(new GridContainer()
         {
             OnUpdate = (grid) =>
             {
-                grid.Scale = Window.Resolution / Window.OriginalResolution;
+                grid.Scale = Window.Size / Window.OriginalSize;
             }
         });
 
         var grid = GetNode<GridContainer>("GridContainer");
 
+        grid.AddChild(new NumberButton() { Text = "(" });
+        grid.AddChild(new NumberButton() { Text = ")" });
+        grid.AddChild(new NumberButton() { Text = "★" });
+        grid.AddChild(new NumberButton() { Text = "÷" });
+
         grid.AddChild(new NumberButton() { Text = "7" });
         grid.AddChild(new NumberButton() { Text = "8" });
-        grid.AddChild(new NumberButton() { Text = "8" });
+        grid.AddChild(new NumberButton() { Text = "9" });
         grid.AddChild(new NumberButton() { Text = "x" });
         
         grid.AddChild(new NumberButton() { Text = "4" });
@@ -49,143 +65,26 @@ public partial class MainScene : Node
         grid.AddChild(new NumberButton() { Text = "+" });
         
         grid.AddChild(new NumberButton() { Text = "^" });
-        grid.AddChild(new NumberButton() { Text = "." });
         grid.AddChild(new NumberButton() { Text = "0" });
-        grid.AddChild(new NumberButton() { Text = "=" });
-
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(0, 144),
-        //    Text = "7",
-        //    Column = 1,
-        //    Row = 1,
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(0, 144),
-        //    Text = "8",
-        //    Column = 2,
-        //    Row = 1,
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(20, 144),
-        //    Text = "9",
-        //    Column = 3,
-        //    Row = 1
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(0, 144),
-        //    Text = "x",
-        //    Column = 4,
-        //    Row = 1
-        //});
-        //
-        //// 4 5 6 -
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(50, 216),
-        //    Text = "4",
-        //    Column = 1,
-        //    Row = 2
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(140 - 5, 216),
-        //    Text = "5",
-        //    Column = 2,
-        //    Row = 2
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(230 - 10, 216),
-        //    Text = "6",
-        //    Column = 3,
-        //    Row = 2
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(320 - 15, 216),
-        //    Text = "-",
-        //    Column = 4,
-        //    Row = 2
-        //});
-        //
-        //
-        //// 1 2 3 +
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(50, 288),
-        //    Text = "1",
-        //    Column = 1,
-        //    Row = 3
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(140 - 5, 288),
-        //    Text = "2",
-        //    Column = 2,
-        //    Row = 3
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(230 - 10, 288),
-        //    Text = "3",
-        //    Column = 3,
-        //    Row = 3
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(320 - 15, 288),
-        //    Text = "+",
-        //    Column = 4,
-        //    Row = 3
-        //});
-        //
-        //// ? 0 . =
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(50, 360),
-        //    Text = "?",
-        //    Column = 1,
-        //    Row = 4
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(140 - 5, 360),
-        //    Text = "0",
-        //    Column = 2,
-        //    Row = 4
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(230 - 10, 360),
-        //    Text = ".",
-        //    Column = 3,
-        //    Row = 4
-        //});
-        //
-        //AddChild(new NumberButton
-        //{
-        //    Position = new(320 - 15, 360),
-        //    Text = "=",
-        //    Column = 4,
-        //    Row = 4
-        //});
+        grid.AddChild(new NumberButton() { Text = "." });
+        grid.AddChild(new NumberButton() 
+        {  
+            Text = "=", 
+            IsDigit = false,
+            Style = new()
+            {
+                FillColor = ThemeLoader.Instance.Colors["Accent"],
+                Pressed = new()
+                {
+                    FillColor = ThemeLoader.Instance.Colors["AccentDarker"]
+                },
+                Hover = new()
+                {
+                    FillColor = ThemeLoader.Instance.Colors["AccentLighter"]
+                },
+                Roundness = 0.5f,
+                FontSize = 32,
+            }
+        });
     }
 }

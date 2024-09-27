@@ -4,37 +4,42 @@ namespace Quanta;
 
 public partial class TextBox : ClickableRectangle
 {
+    #region [ - - - Properties & Fields - - - ]
+
     public static readonly Vector2 DefaultSize = new(300, 25);
 
-    public string Text { get; set; } = "";
-    public string DefaultText { get; set; } = "";
-    public string PlaceholderText { get; set; } = "";
-    public Vector2 TextOrigin { get; set; } = new(8, 0);
-    public int MaxCharacters { get; set; } = int.MaxValue;
-    public int MinCharacters { get; set; } = 0;
-    public List<char> AllowedCharacters { get; set; } = [];
-    public ButtonStyle Style { get; set; } = new();
-    public bool Selected { get; set; } = false;
-    public bool Editable { get; set; } = true;
-    public bool RevertToDefaultText { get; set; } = true;
-    public bool TemporaryDefaultText { get; set; } = true;
-    public bool Secret { get; set; } = false;
-    public char SecretCharacter { get; set; } = '*';
+    public string      Text                 { get; set; } = "";
+    public string      DefaultText          { get; set; } = "";
+    public string      PlaceholderText      { get; set; } = "";
+    public Vector2     TextOrigin           { get; set; } = new(8, 0);
+    public int         MaxCharacters        { get; set; } = int.MaxValue;
+    public int         MinCharacters        { get; set; } = 0;
+    public List<char>  AllowedCharacters    { get; set; } = [];
+    public ButtonStyle Style                { get; set; } = new();
+    public bool        Selected             { get; set; } = false;
+    public bool        Editable             { get; set; } = true;
+    public bool        RevertToDefaultText  { get; set; } = true;
+    public bool        TemporaryDefaultText { get; set; } = true;
+    public bool        Secret               { get; set; } = false;
+    public char        SecretCharacter      { get; set; } = '*';
+
     public Action<TextBox> OnUpdate = (textBox) => { };
 
-    public event EventHandler? FirstCharacterEntered;
-    public event EventHandler? Cleared;
+    public event EventHandler?         FirstCharacterEntered;
+    public event EventHandler?         Cleared;
     public event EventHandler<string>? TextChanged;
     public event EventHandler<string>? Confirmed;
 
-    private const int minAscii = 32;
-    private const int maxAscii = 125;
+    private const int   minAscii       = 32;
+    private const int   maxAscii       = 125;
     private const float backspaceDelay = 0.5f; 
     private const float backspaceSpeed = 0.05f;
 
-    private TextBoxCaret caret;
-    private float backspaceTimer = 0f;
-    private bool backspaceHeld = false;
+    private Caret caret;
+    private float        backspaceTimer = 0f;
+    private bool         backspaceHeld  = false;
+
+    #endregion
 
     public TextBox()
     {
@@ -47,7 +52,7 @@ public partial class TextBox : ClickableRectangle
         Style.Pressed.OutlineThickness = 1;
         Style.Pressed.OutlineColor = ThemeLoader.Instance.Colors["Accent"];
 
-        caret = GetNode<TextBoxCaret>("Caret");
+        caret = GetNode<Caret>("Caret");
 
         base.Start();
     }
@@ -58,6 +63,16 @@ public partial class TextBox : ClickableRectangle
         HandleInput();
         PasteText();
         base.Update();
+    }
+
+    public void Insert(string input)
+    {
+        if (!Editable)
+        {
+            return;
+        }
+
+        InsertTextAtCaret(input);
     }
 
     private void HandleInput()
@@ -146,6 +161,33 @@ public partial class TextBox : ClickableRectangle
         }
     }
 
+    private void InsertTextAtCaret(string text)
+    {
+        bool isSpaceLeft = Text.Length + text.Length <= MaxCharacters;
+
+        if (isSpaceLeft)
+        {
+            if (TemporaryDefaultText && Text == DefaultText)
+            {
+                Text = "";
+            }
+
+            if (caret.X < 0 || caret.X > Text.Length)
+            {
+                caret.X = Text.Length;
+            }
+
+            Text = Text.Insert(caret.X, text);
+            caret.X += text.Length;
+            TextChanged?.Invoke(this, Text);
+
+            if (Text.Length == text.Length)
+            {
+                FirstCharacterEntered?.Invoke(this, EventArgs.Empty);
+            }
+        }
+    }
+
     private void HandleBackspace()
     {
         if (Raylib.IsKeyPressed(KeyboardKey.Backspace))
@@ -195,7 +237,10 @@ public partial class TextBox : ClickableRectangle
 
     private void PasteText()
     {
-        if (Raylib.IsKeyDown(KeyboardKey.LeftControl) && Raylib.IsKeyPressed(KeyboardKey.V))
+        bool pressedLeftControl = Raylib.IsKeyDown(KeyboardKey.LeftControl);
+        bool pressedV = Raylib.IsKeyPressed(KeyboardKey.V);
+
+        if (pressedLeftControl && pressedV)
         {
             char[] clipboardContent = [.. Raylib.GetClipboardText_()];
 
