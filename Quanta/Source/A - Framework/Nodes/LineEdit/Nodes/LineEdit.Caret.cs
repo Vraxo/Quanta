@@ -15,6 +15,8 @@ public partial class LineEdit
         private byte alpha = 255;
         private LineEdit parent;
 
+        public bool caretMovement = false;
+
         private int _x = 0;
         public int X
         {
@@ -79,19 +81,40 @@ public partial class LineEdit
 
         private void HandleInput()
         {
+            // Handle left mouse click to position the caret
             if (Raylib.IsMouseButtonPressed(MouseButton.Left))
             {
                 MoveIntoPosition(Raylib.GetMousePosition().X);
             }
 
+            // Handle caret movement with arrow keys
             if (Raylib.IsKeyPressed(KeyboardKey.Right))
             {
-                X++;
+                // If caret is at the end of visible text, scroll right
+                if (X >= parent.Text.Length - parent.textStartIndex)
+                {
+                    if (parent.textStartIndex < parent.Text.Length)
+                    {
+                        parent.textStartIndex++;
+                    }
+                }
+                else
+                {
+                    X++;
+                }
             }
 
             if (Raylib.IsKeyPressed(KeyboardKey.Left))
             {
-                X--;
+                // If caret is at the beginning of visible text, scroll left
+                if (X <= 0 && parent.textStartIndex > 0)
+                {
+                    parent.textStartIndex--;
+                }
+                else if (X > 0)
+                {
+                    X--;
+                }
             }
         }
 

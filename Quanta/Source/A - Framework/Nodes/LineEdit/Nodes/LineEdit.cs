@@ -136,12 +136,9 @@ public partial class LineEdit : ClickableRectangle
 
         if (isKeyInRange && isSpaceLeft)
         {
-            if (AllowedCharacters.Count > 0)
+            if (AllowedCharacters.Count > 0 && !AllowedCharacters.Contains((char)key))
             {
-                if (!AllowedCharacters.Contains((char)key))
-                {
-                    return;
-                }
+                return;
             }
 
             if (UseDefaultText && Text == DefaultText)
@@ -149,15 +146,17 @@ public partial class LineEdit : ClickableRectangle
                 Text = "";
             }
 
-            if (caret.X < 0 || caret.X > Text.Length)
-            {
-                caret.X = Text.Length;
-            }
-
             int insertPosition = Math.Clamp(caret.X + textStartIndex, 0, Text.Length);
 
             Text = Text.Insert(insertPosition, ((char)key).ToString());
             caret.X++;
+
+            // Adjust textStartIndex if necessary to keep the caret in view
+            if (caret.X >= GetVisibleCharacterCount())
+            {
+                textStartIndex++;
+            }
+
             TextChanged?.Invoke(this, Text);
 
             if (Text.Length == 1)
@@ -251,27 +250,19 @@ public partial class LineEdit : ClickableRectangle
 
         if (Text.Length > 0 && caret.X > 0)
         {
-            // Adjust the delete index based on both caret position and textStartIndex
             int deleteIndex = Math.Clamp(caret.X + textStartIndex - 1, 0, Text.Length - 1);
 
-            Console.WriteLine("Text length: " + Text.Length);
-            Console.WriteLine("Caret X    : " + caret.X);
-            Console.WriteLine("Delete index: " + deleteIndex);
-
-            // Ensure deleteIndex is within the bounds of the Text string
             if (deleteIndex >= 0 && deleteIndex < Text.Length)
             {
                 Text = Text.Remove(deleteIndex, 1);
-                Console.WriteLine("deleted");
 
-                // If textStartIndex is greater than 0, decrement it instead of moving caret.X
                 if (textStartIndex > 0)
                 {
                     textStartIndex--;
                 }
                 else
                 {
-                    caret.X--; // Only decrement the caret if we're at the start of the visible text
+                    caret.X--;
                 }
             }
         }
@@ -285,6 +276,7 @@ public partial class LineEdit : ClickableRectangle
             Cleared?.Invoke(this, EventArgs.Empty);
         }
     }
+
 
     private void PasteText()
     {
@@ -325,32 +317,33 @@ public partial class LineEdit : ClickableRectangle
     private void UpdateVisibleText()
     {
         float textWidth = GetTextWidth();
+        float visibleWidth = Size.X - TextOrigin.X; // Available space for text
 
-        // Check if the text width exceeds the available size
-        if (textWidth > Size.X - TextOrigin.X)
+        // Check if the text exceeds the available visible space
+        if (textWidth > visibleWidth)
         {
-            float outsideTextWidth = textWidth - (Size.X - TextOrigin.X);
+            float overflowWidth = textWidth - visibleWidth; // How much text is outside the visible area
             float oneCharacterWidth = GetOneCharacterWidth();
 
-            // Calculate the new textStartIndex based on how much text is out of view
-            int newStartIndex = (int)Math.Ceiling(outsideTextWidth / oneCharacterWidth);
+            // Calculate how many characters are off-screen
+            int overflowCharacters = (int)Math.Ceiling(overflowWidth / oneCharacterWidth);
 
-            // If the textStartIndex has increased, adjust the caret position accordingly
-            if (newStartIndex > textStartIndex)
+            // Only adjust textStartIndex if the caret goes out of visible range
+            if (caret.X + textStartIndex >= Text.Length) // Scrolled past the end
             {
-                caret.X = Math.Clamp(caret.X - (newStartIndex - textStartIndex), 0, Text.Length);
+                textStartIndex = Math.Max(0, Text.Length - overflowCharacters);
             }
-
-            // Set the new textStartIndex
-            textStartIndex = newStartIndex;
+            else if (caret.X + textStartIndex < 0) // Scrolled too far left
+            {
+                textStartIndex = 0;
+            }
         }
         else
         {
-            // Reset the textStartIndex when the text fits within the visible area
+            // Reset textStartIndex if the text fits the visible area
             textStartIndex = 0;
         }
     }
-
 
     private float GetTextWidth()
     {
@@ -372,5 +365,13 @@ public partial class LineEdit : ClickableRectangle
             Style.Current.TextSpacing).X;
 
         return oneCharacterWidth;
+    }
+
+    private int GetVisibleCharacterCount()
+    {
+        float visibleWidth = Size.X - TextOrigin.X; // Space for text
+        float oneCharacterWidth = GetOneCharacterWidth();
+
+        return (int)Math.Floor(visibleWidth / oneCharacterWidth); // How many characters fit in the visible space
     }
 }
