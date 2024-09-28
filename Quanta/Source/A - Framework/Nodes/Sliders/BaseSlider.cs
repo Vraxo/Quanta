@@ -4,11 +4,13 @@ public abstract class BaseSlider : ClickableRectangle
 {
     public float InitialPercentage { get; set; } = -1;
     public float DefaultPercentage { get; set; } = 0;
-    public float MaxExternalValue { get; set; } = 0;
-    public bool HasButtons { get; set; } = true;
+    public float MaxExternalValue  { get; set; } = 0;
+    public bool HasButtons         { get; set; } = true;
+    public bool ResetOnRitghtClick { get; set; } = true;
     public ButtonStyle FilledStyle { get; set; } = new();
-    public ButtonStyle EmptyStyle { get; set; } = new();
+    public ButtonStyle EmptyStyle  { get; set; } = new();
     public BaseGrabber Grabber;
+
     public Action<BaseSlider> OnUpdate = (slider) => { };
 
     public event EventHandler<float>? PercentageChanged;

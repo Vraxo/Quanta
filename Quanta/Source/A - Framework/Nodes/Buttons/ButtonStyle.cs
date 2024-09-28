@@ -9,6 +9,8 @@ public class ButtonStyle
         //OutlineThickness = 0;
     }
 
+    // Sates
+
     public ButtonStateStyle Current { get; set; } = new();
 
     public ButtonStateStyle Default { get; set; } = new();
@@ -24,6 +26,8 @@ public class ButtonStyle
         FillColor = ThemeLoader.Instance.Colors["Accent"],
         OutlineColor = ThemeLoader.Instance.Colors["PressedOutline"],
     };
+
+    // Omni setters
 
     public float Roundness
     {

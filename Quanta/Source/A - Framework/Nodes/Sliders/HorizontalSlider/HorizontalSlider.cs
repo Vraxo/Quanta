@@ -21,7 +21,6 @@ public partial class HorizontalSlider : BaseSlider
         float minPos = GlobalPosition.X;
         float maxPos = minPos + Size.X;
 
-        // Evaluate and clamp the percentage
         Percentage = Math.Clamp((currentPosition - minPos) / (maxPos - minPos), 0, 1);
     }
 
@@ -80,9 +79,12 @@ public partial class HorizontalSlider : BaseSlider
 
             if (Raylib.IsMouseButtonPressed(MouseButton.Right) && OnTopRight)
             {
-                RevertToDefaultPercentage();
-                OnPercentageChanged();
-                OnReleased();
+                if (ResetOnRitghtClick)
+                {
+                    RevertToDefaultPercentage();
+                    OnPercentageChanged();
+                    OnReleased();
+                }
             }
         }
     }
