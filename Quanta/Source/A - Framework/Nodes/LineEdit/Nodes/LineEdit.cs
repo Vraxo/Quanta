@@ -8,39 +8,40 @@ public partial class LineEdit : ClickableRectangle
 
     public static readonly Vector2 DefaultSize = new(300, 25);
 
-    public string      Text                 { get; set; } = "";
-    public string      DefaultText          { get; set; } = "";
-    public string      PlaceholderText      { get; set; } = "";
-    public Vector2     TextOrigin           { get; set; } = new(8, 0);
-    public int         MaxCharacters        { get; set; } = int.MaxValue;
-    public int         MinCharacters        { get; set; } = 0;
-    public List<char>  AllowedCharacters    { get; set; } = [];
-    public ButtonStyle Style                { get; set; } = new();
-    public bool        Selected             { get; set; } = false;
-    public bool        Editable             { get; set; } = true;
-    public bool        RevertToDefaultText  { get; set; } = true;
-    public bool        UseDefaultText { get; set; } = true;
-    public bool        Secret               { get; set; } = false;
-    public char        SecretCharacter      { get; set; } = '*';
+    public string Text { get; set; } = "";
+    public string DefaultText { get; set; } = "";
+    public string PlaceholderText { get; set; } = "";
+    public Vector2 TextOrigin { get; set; } = new(8, 0);
+    public int MaxCharacters { get; set; } = int.MaxValue;
+    public int MinCharacters { get; set; } = 0;
+    public List<char> AllowedCharacters { get; set; } = [];
+    public ButtonStyle Style { get; set; } = new();
+    public bool Selected { get; set; } = false;
+    public bool Editable { get; set; } = true;
+    public bool RevertToDefaultText { get; set; } = true;
+    public bool UseDefaultText { get; set; } = true;
+    public bool Secret { get; set; } = false;
+    public char SecretCharacter { get; set; } = '*';
 
     protected int textStartIndex = 1;
-    private string visibleText => Text.Substring(textStartIndex, Text.Length - textStartIndex);
+    protected int textEndIndex = 1; // New variable to calculate the end of the visible text
+    private string visibleText => Text.Substring(textStartIndex, textEndIndex - textStartIndex);
 
     public Action<LineEdit> OnUpdate = (textBox) => { };
 
-    public event EventHandler?         FirstCharacterEntered;
-    public event EventHandler?         Cleared;
+    public event EventHandler? FirstCharacterEntered;
+    public event EventHandler? Cleared;
     public event EventHandler<string>? TextChanged;
     public event EventHandler<string>? Confirmed;
 
-    private const int   minAscii       = 32;
-    private const int   maxAscii       = 125;
-    private const float backspaceDelay = 0.5f; 
+    private const int minAscii = 32;
+    private const int maxAscii = 125;
+    private const float backspaceDelay = 0.5f;
     private const float backspaceSpeed = 0.05f;
 
     private Caret caret;
-    private float        backspaceTimer = 0f;
-    private bool         backspaceHeld  = false;
+    private float backspaceTimer = 0f;
+    private bool backspaceHeld = false;
 
     #endregion
 
@@ -62,7 +63,6 @@ public partial class LineEdit : ClickableRectangle
 
     public override void Update()
     {
-        Console.WriteLine(textStartIndex);
         OnUpdate(this);
         HandleInput();
         PasteText();
@@ -172,7 +172,6 @@ public partial class LineEdit : ClickableRectangle
         }
     }
 
-
     private void InsertTextAtCaret(string text)
     {
         bool isSpaceLeft = Text.Length + text.Length <= MaxCharacters;
@@ -227,30 +226,6 @@ public partial class LineEdit : ClickableRectangle
         }
     }
 
-    //private void DeleteLastCharacter()
-    //{
-    //    int textLengthBeforeDeletion = Text.Length;
-    //
-    //    if (Text.Length > 0 && caret.X > 0)
-    //    {
-    //        Console.WriteLine(caret.X - 1);
-    //        Console.WriteLine(textStartIndex);
-    //        Console.WriteLine(caret.X - 1 + textStartIndex);
-    //        Console.WriteLine(Text.Length);
-    //        Text = Text.Remove(caret.X - 1 + textStartIndex, 1);
-    //        caret.X--;
-    //    }
-    //
-    //    RevertTextToDefaultIfEmpty();
-    //
-    //    TextChanged?.Invoke(this, Text);
-    //
-    //    if (Text.Length == 0 && textLengthBeforeDeletion != 0)
-    //    {
-    //        Cleared?.Invoke(this, EventArgs.Empty);
-    //    }
-    //}
-
     private void DeleteLastCharacter()
     {
         int textLengthBeforeDeletion = Text.Length;
@@ -283,7 +258,6 @@ public partial class LineEdit : ClickableRectangle
             Cleared?.Invoke(this, EventArgs.Empty);
         }
     }
-
 
     private void PasteText()
     {
@@ -319,8 +293,6 @@ public partial class LineEdit : ClickableRectangle
         }
     }
 
-    //
-
     private void UpdateVisibleText()
     {
         float textWidth = GetTextWidth();
@@ -328,12 +300,14 @@ public partial class LineEdit : ClickableRectangle
         // Check if the text width exceeds the available size
         if (textWidth > Size.X - TextOrigin.X)
         {
-            float outsideTextWidth = textWidth - (Size.X - TextOrigin.X);
+            float availableWidth = Size.X - TextOrigin.X;
             float oneCharacterWidth = GetOneCharacterWidth();
 
-            // Calculate the new textStartIndex based on how much text is out of view
-            int newStartIndex = (int)Math.Ceiling(outsideTextWidth / oneCharacterWidth);
-            newStartIndex = Math.Clamp(newStartIndex, 0, Text.Length - 1);
+            // Calculate the number of characters that can fit in the available space
+            int visibleCharCount = (int)(availableWidth / oneCharacterWidth);
+
+            // Update the textEndIndex to stop at the visible character count
+            textEndIndex = Math.Clamp(textStartIndex + visibleCharCount - 1, 0, Text.Length); // -1 here to restrict it by one character
 
             // Adjust textStartIndex if the caret is at the end of the visible text
             if (caret.X >= GetVisibleCharacterCount() && textStartIndex < Text.Length - 1)
@@ -341,18 +315,13 @@ public partial class LineEdit : ClickableRectangle
                 textStartIndex++;
                 caret.X--; // Move caret left to stay within visible area
             }
-            else if (newStartIndex < textStartIndex)
-            {
-                textStartIndex = newStartIndex;
-            }
         }
         else
         {
             textStartIndex = 0; // Reset if everything fits
+            textEndIndex = Text.Length; // Show all text
         }
     }
-
-
 
     private float GetTextWidth()
     {
@@ -379,10 +348,8 @@ public partial class LineEdit : ClickableRectangle
     private int GetVisibleCharacterCount()
     {
         float availableWidth = Size.X - TextOrigin.X;
-        float characterWidth = GetOneCharacterWidth(); // Assuming this method returns width of a character
+        float characterWidth = GetOneCharacterWidth();
 
-        // Calculate how many characters can fit within the available width
         return (int)(availableWidth / characterWidth);
     }
-
 }

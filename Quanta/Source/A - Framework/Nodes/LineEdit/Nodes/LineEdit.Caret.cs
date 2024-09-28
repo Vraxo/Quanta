@@ -135,18 +135,20 @@ public partial class LineEdit
 
         private void MoveCaretRight()
         {
-            if (X >= parent.Text.Length - parent.textStartIndex)
+            int visibleCharCount = parent.GetVisibleCharacterCount();
+
+            // If the caret is at the end of the visible text and there are more characters to the right
+            if (X >= visibleCharCount - 1 && parent.textStartIndex + visibleCharCount < parent.Text.Length)
             {
-                if (parent.textStartIndex < parent.Text.Length)
-                {
-                    parent.textStartIndex++;
-                }
+                parent.textStartIndex++; // Scroll the text to the right
             }
-            else
+            // If the caret is still within the visible text range
+            else if (X < visibleCharCount - 1)
             {
-                X++;
+                X++; // Move the caret to the right within the visible range
             }
         }
+
 
         private void MoveCaretLeft()
         {
