@@ -20,6 +20,7 @@ public partial class MainScene : Node
         AddChild(new MathTextBox
         {
             Position = new(196, 48),
+            Text = "General Kenobi!",
             AllowedCharacters = CharacterSet.Mathematics,
             Size = new(LineEdit.DefaultSize.X, LineEdit.DefaultSize.Y * 2),
             Style = new()

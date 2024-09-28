@@ -8,7 +8,7 @@ public partial class LineEdit
         {
             return parent.Secret ?
                 new string(parent.SecretCharacter, parent.Text.Length) :
-                parent.Text;
+                parent.Text.Substring(parent.textStartIndex, parent.Text.Length - parent.textStartIndex);
         }
 
         protected override bool ShouldSkipDrawing()

@@ -22,19 +22,18 @@ public partial class LineEdit
 
             set
             {
-                if (value > _x)
+                // Constrain caret position to be between textStartIndex and the end of the visible text.
+                if (value >= parent.textStartIndex && value <= parent.Text.Length)
                 {
-                    if (_x < parent.Text.Length)
-                    {
-                        _x = value;
-                    }
+                    _x = value;
                 }
-                else
+                else if (value < parent.textStartIndex)
                 {
-                    if (value >= 0)
-                    {
-                        _x = value;
-                    }
+                    _x = parent.textStartIndex;
+                }
+                else if (value > parent.Text.Length)
+                {
+                    _x = parent.Text.Length;
                 }
 
                 alpha = maxAlpha;
@@ -92,21 +91,18 @@ public partial class LineEdit
         {
             if (parent.Text.Length == 0)
             {
-                X = 0;
+                X = parent.textStartIndex;
             }
             else
             {
-                //float x = mouseX - mainScene.GlobalPosition.X + mainScene.Origin.X;
-
                 float x = mouseX - parent.GlobalPosition.X + parent.Origin.X - parent.TextOrigin.X / 2;
 
                 int characterWidth = GetCharacterWidth();
 
-                X = (int)MathF.Floor(x / characterWidth);
+                X = (int)MathF.Floor(x / characterWidth) + parent.textStartIndex;
 
-                X = X > parent.Text.Length ?
-                    parent.Text.Length :
-                    X;
+                // Ensure the caret stays within bounds
+                X = Math.Clamp(X, parent.textStartIndex, parent.Text.Length);
             }
         }
 
@@ -115,10 +111,11 @@ public partial class LineEdit
             int width = GetWidth();
             int height = GetHeight();
 
-            int x = (int)(GlobalPosition.X - parent.Origin.X + parent.TextOrigin.X + X * width - width / 2) + X;
+            // Adjust the caret position based on textStartIndex
+            int x = (int)(GlobalPosition.X - parent.Origin.X + parent.TextOrigin.X + (X - parent.textStartIndex) * width - width / 2) + X;
             int y = (int)(GlobalPosition.Y + parent.Size.Y / 2 - height / 2 - parent.Origin.Y);
 
-            return new(x, y);
+            return new Vector2(x, y);
         }
 
         private int GetWidth()
@@ -126,9 +123,7 @@ public partial class LineEdit
             Font font = parent.Style.Current.Font;
             float fontSize = parent.Style.Current.FontSize;
 
-            int width = (int)Raylib.MeasureTextEx(font, "|", fontSize, 1).X;
-
-            return width;
+            return (int)Raylib.MeasureTextEx(font, "|", fontSize, 1).X;
         }
 
         private int GetHeight()
@@ -136,22 +131,23 @@ public partial class LineEdit
             Font font = parent.Style.Current.Font;
             float fontSize = parent.Style.Current.FontSize;
 
-            int fontHeight = (int)(Raylib.MeasureTextEx(font, parent.Text, fontSize, 1).Y);
-
-            return fontHeight;
+            return (int)Raylib.MeasureTextEx(font, parent.Text, fontSize, 1).Y;
         }
 
         private int GetCharacterWidth()
         {
+            if (parent.Text.Length == 0)
+            {
+                return 0;
+            }
+
             float textWidth = Raylib.MeasureTextEx(
                                   parent.Style.Current.Font,
-                                  parent.Text,
+                                  parent.Text.Substring(parent.textStartIndex),  // Measure visible text
                                   parent.Style.Current.FontSize,
                                   1).X;
 
-            int characterWidth = (int)MathF.Ceiling(textWidth) / parent.Text.Length;
-
-            return characterWidth;
+            return (int)MathF.Ceiling(textWidth / (parent.Text.Length - parent.textStartIndex));
         }
 
         private Color GetColor()
@@ -173,4 +169,5 @@ public partial class LineEdit
             timer += Raylib.GetFrameTime();
         }
     }
+
 }

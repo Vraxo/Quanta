@@ -23,6 +23,8 @@ public partial class LineEdit : ClickableRectangle
     public bool        Secret               { get; set; } = false;
     public char        SecretCharacter      { get; set; } = '*';
 
+    protected int textStartIndex = 1;
+
     public Action<LineEdit> OnUpdate = (textBox) => { };
 
     public event EventHandler?         FirstCharacterEntered;
@@ -62,6 +64,7 @@ public partial class LineEdit : ClickableRectangle
         OnUpdate(this);
         HandleInput();
         PasteText();
+        UpdateVisibleText();
         base.Update();
     }
 
@@ -267,5 +270,10 @@ public partial class LineEdit : ClickableRectangle
         {
             Text = DefaultText;
         }
+    }
+
+    private void UpdateVisibleText()
+    {
+
     }
 }
