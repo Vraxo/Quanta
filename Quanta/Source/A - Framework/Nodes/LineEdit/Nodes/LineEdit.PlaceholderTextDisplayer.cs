@@ -1,6 +1,6 @@
 ﻿namespace Quanta;
 
-public partial class TextBox
+public partial class LineEdit
 {
     private class PlaceholderTextDisplayer : BaseText
     {

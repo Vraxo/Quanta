@@ -2,7 +2,7 @@
 
 namespace Quanta;
 
-public partial class TextBox
+public partial class LineEdit
 {
     private class Caret : Node2D
     {
@@ -13,7 +13,7 @@ public partial class TextBox
         private const byte maxAlpha = 255;
         private float timer = 0;
         private byte alpha = 255;
-        private TextBox parent;
+        private LineEdit parent;
 
         private int _x = 0;
         public int X
@@ -43,7 +43,7 @@ public partial class TextBox
 
         public override void Start()
         {
-            parent = GetParent<TextBox>();
+            parent = GetParent<LineEdit>();
         }
 
         public override void Update()

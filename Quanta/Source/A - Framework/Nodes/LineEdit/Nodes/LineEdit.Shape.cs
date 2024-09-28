@@ -2,15 +2,15 @@
 
 namespace Quanta;
 
-public partial class TextBox
+public partial class LineEdit
 {
     private class Shape : Node2D
     {
-        private TextBox parent;
+        private LineEdit parent;
 
         public override void Start()
         {
-            parent = GetParent<TextBox>();
+            parent = GetParent<LineEdit>();
         }
 
         public override void Update()

@@ -2,7 +2,7 @@
 
 namespace Quanta;
 
-public partial class TextBox : ClickableRectangle
+public partial class LineEdit : ClickableRectangle
 {
     #region [ - - - Properties & Fields - - - ]
 
@@ -23,7 +23,7 @@ public partial class TextBox : ClickableRectangle
     public bool        Secret               { get; set; } = false;
     public char        SecretCharacter      { get; set; } = '*';
 
-    public Action<TextBox> OnUpdate = (textBox) => { };
+    public Action<LineEdit> OnUpdate = (textBox) => { };
 
     public event EventHandler?         FirstCharacterEntered;
     public event EventHandler?         Cleared;
@@ -41,7 +41,7 @@ public partial class TextBox : ClickableRectangle
 
     #endregion
 
-    public TextBox()
+    public LineEdit()
     {
         Size = DefaultSize;
     }

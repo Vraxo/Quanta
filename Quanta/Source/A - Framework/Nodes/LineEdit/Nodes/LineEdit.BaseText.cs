@@ -2,17 +2,17 @@
 
 namespace Quanta;
 
-public partial class TextBox
+public partial class LineEdit
 {
     private abstract class BaseText : Node2D
     {
         public TextBoxStyle Style;
 
-        protected TextBox parent;
+        protected LineEdit parent;
 
         public override void Start()
         {
-            parent = GetParent<TextBox>();
+            parent = GetParent<LineEdit>();
         }
 
         public override void Update()

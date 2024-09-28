@@ -21,7 +21,7 @@ public partial class MainScene : Node
         {
             Position = new(196, 48),
             AllowedCharacters = CharacterSet.Mathematics,
-            Size = new(TextBox.DefaultSize.X, TextBox.DefaultSize.Y * 2),
+            Size = new(LineEdit.DefaultSize.X, LineEdit.DefaultSize.Y * 2),
             Style = new()
             {
                 Roundness = 0.5f,

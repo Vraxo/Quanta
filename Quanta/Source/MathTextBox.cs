@@ -2,7 +2,7 @@
 
 namespace Quanta;
 
-public class MathTextBox : TextBox
+public class MathTextBox : LineEdit
 {
     public void Evaluate()
     {

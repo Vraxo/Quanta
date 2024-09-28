@@ -1,6 +1,6 @@
 ﻿namespace Quanta;
 
-public partial class TextBox : ClickableRectangle
+public partial class LineEdit : ClickableRectangle
 {
     public override void Build()
     {
