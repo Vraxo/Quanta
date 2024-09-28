@@ -24,31 +24,15 @@ public partial class LineEdit
             set
             {
                 // Ensure that after a deletion, X doesn't exceed the current visible part of the text
-                int maxCaretPosition = Math.Max(parent.Text.Length - parent.textStartIndex, 0);
+                int maxVisibleCharacters = parent.Text.Length - parent.textStartIndex;
 
-                // Ensure X is within bounds (not less than 0, and not greater than the visible text length)
-                if (value > _x) // Moving to the right
-                {
-                    // Allow movement to the right as long as it doesn't exceed the visible text length
-                    if (_x < maxCaretPosition)
-                    {
-                        _x = value;
-                    }
-                }
-                else // Moving to the left
-                {
-                    // Allow movement to the left, ensuring it doesn't go below 0
-                    if (value >= 0)
-                    {
-                        _x = value;
-                    }
-                }
+                // Clamp the value to the range of visible characters
+                _x = Math.Clamp(value, 0, maxVisibleCharacters);
 
                 // Reset alpha to make the caret visible again
                 alpha = maxAlpha;
             }
         }
-
 
         public override void Start()
         {

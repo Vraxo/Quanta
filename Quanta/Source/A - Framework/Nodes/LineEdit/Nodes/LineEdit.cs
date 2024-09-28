@@ -137,9 +137,12 @@ public partial class LineEdit : ClickableRectangle
 
         if (isKeyInRange && isSpaceLeft)
         {
-            if (AllowedCharacters.Count > 0 && !AllowedCharacters.Contains((char)key))
+            if (AllowedCharacters.Count > 0)
             {
-                return;
+                if (!AllowedCharacters.Contains((char)key))
+                {
+                    return;
+                }
             }
 
             if (UseDefaultText && Text == DefaultText)
@@ -148,15 +151,16 @@ public partial class LineEdit : ClickableRectangle
             }
 
             int insertPosition = Math.Clamp(caret.X + textStartIndex, 0, Text.Length);
-
             Text = Text.Insert(insertPosition, ((char)key).ToString());
+
+            // Adjust caret position after insertion
             caret.X++;
 
-            // Adjust textStartIndex if necessary to keep the caret in view
+            // Check if the caret has moved beyond the visible character count
             if (caret.X >= GetVisibleCharacterCount())
             {
                 textStartIndex++;
-                caret.X--;
+                caret.X--; // Move the caret back to stay in the visible area
             }
 
             TextChanged?.Invoke(this, Text);
@@ -167,6 +171,7 @@ public partial class LineEdit : ClickableRectangle
             }
         }
     }
+
 
     private void InsertTextAtCaret(string text)
     {
@@ -323,24 +328,18 @@ public partial class LineEdit : ClickableRectangle
         // Check if the text width exceeds the available size
         if (textWidth > Size.X - TextOrigin.X)
         {
-            // Calculate the number of characters that are out of view
             float outsideTextWidth = textWidth - (Size.X - TextOrigin.X);
             float oneCharacterWidth = GetOneCharacterWidth();
 
             // Calculate the new textStartIndex based on how much text is out of view
             int newStartIndex = (int)Math.Ceiling(outsideTextWidth / oneCharacterWidth);
-
-            // Clamp newStartIndex to avoid going beyond the text length
             newStartIndex = Math.Clamp(newStartIndex, 0, Text.Length - 1);
 
-            // Update only if the caret has reached the end of the visible text
-            if (caret.X >= Text.Length - textStartIndex)
+            // Adjust textStartIndex if the caret is at the end of the visible text
+            if (caret.X >= GetVisibleCharacterCount() && textStartIndex < Text.Length - 1)
             {
-                // Only scroll one character to the right
-                if (newStartIndex > textStartIndex)
-                {
-                    textStartIndex++;
-                }
+                textStartIndex++;
+                caret.X--; // Move caret left to stay within visible area
             }
             else if (newStartIndex < textStartIndex)
             {
@@ -349,10 +348,10 @@ public partial class LineEdit : ClickableRectangle
         }
         else
         {
-            // Reset the textStartIndex when the text fits within the visible area
-            textStartIndex = 0;
+            textStartIndex = 0; // Reset if everything fits
         }
     }
+
 
 
     private float GetTextWidth()
