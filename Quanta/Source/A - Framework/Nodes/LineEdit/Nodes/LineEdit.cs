@@ -23,7 +23,7 @@ public partial class LineEdit : ClickableRectangle
     public bool        Secret               { get; set; } = false;
     public char        SecretCharacter      { get; set; } = '*';
 
-    protected int textStartIndex = 0;
+    protected int textStartIndex = 1;
     private string visibleText => Text.Substring(textStartIndex, Text.Length - textStartIndex);
 
     public Action<LineEdit> OnUpdate = (textBox) => { };
@@ -62,6 +62,7 @@ public partial class LineEdit : ClickableRectangle
 
     public override void Update()
     {
+        Console.WriteLine(textStartIndex);
         OnUpdate(this);
         HandleInput();
         PasteText();
@@ -155,6 +156,7 @@ public partial class LineEdit : ClickableRectangle
             if (caret.X >= GetVisibleCharacterCount())
             {
                 textStartIndex++;
+                caret.X--;
             }
 
             TextChanged?.Invoke(this, Text);
@@ -317,33 +319,41 @@ public partial class LineEdit : ClickableRectangle
     private void UpdateVisibleText()
     {
         float textWidth = GetTextWidth();
-        float visibleWidth = Size.X - TextOrigin.X; // Available space for text
 
-        // Check if the text exceeds the available visible space
-        if (textWidth > visibleWidth)
+        // Check if the text width exceeds the available size
+        if (textWidth > Size.X - TextOrigin.X)
         {
-            float overflowWidth = textWidth - visibleWidth; // How much text is outside the visible area
+            // Calculate the number of characters that are out of view
+            float outsideTextWidth = textWidth - (Size.X - TextOrigin.X);
             float oneCharacterWidth = GetOneCharacterWidth();
 
-            // Calculate how many characters are off-screen
-            int overflowCharacters = (int)Math.Ceiling(overflowWidth / oneCharacterWidth);
+            // Calculate the new textStartIndex based on how much text is out of view
+            int newStartIndex = (int)Math.Ceiling(outsideTextWidth / oneCharacterWidth);
 
-            // Only adjust textStartIndex if the caret goes out of visible range
-            if (caret.X + textStartIndex >= Text.Length) // Scrolled past the end
+            // Clamp newStartIndex to avoid going beyond the text length
+            newStartIndex = Math.Clamp(newStartIndex, 0, Text.Length - 1);
+
+            // Update only if the caret has reached the end of the visible text
+            if (caret.X >= Text.Length - textStartIndex)
             {
-                textStartIndex = Math.Max(0, Text.Length - overflowCharacters);
+                // Only scroll one character to the right
+                if (newStartIndex > textStartIndex)
+                {
+                    textStartIndex++;
+                }
             }
-            else if (caret.X + textStartIndex < 0) // Scrolled too far left
+            else if (newStartIndex < textStartIndex)
             {
-                textStartIndex = 0;
+                textStartIndex = newStartIndex;
             }
         }
         else
         {
-            // Reset textStartIndex if the text fits the visible area
+            // Reset the textStartIndex when the text fits within the visible area
             textStartIndex = 0;
         }
     }
+
 
     private float GetTextWidth()
     {
@@ -369,9 +379,11 @@ public partial class LineEdit : ClickableRectangle
 
     private int GetVisibleCharacterCount()
     {
-        float visibleWidth = Size.X - TextOrigin.X; // Space for text
-        float oneCharacterWidth = GetOneCharacterWidth();
+        float availableWidth = Size.X - TextOrigin.X;
+        float characterWidth = GetOneCharacterWidth(); // Assuming this method returns width of a character
 
-        return (int)Math.Floor(visibleWidth / oneCharacterWidth); // How many characters fit in the visible space
+        // Calculate how many characters can fit within the available width
+        return (int)(availableWidth / characterWidth);
     }
+
 }
