@@ -4,7 +4,7 @@ namespace Quanta;
 
 public partial class TextBox
 {
-    public class Shape : Node2D
+    private class Shape : Node2D
     {
         private TextBox parent;
 

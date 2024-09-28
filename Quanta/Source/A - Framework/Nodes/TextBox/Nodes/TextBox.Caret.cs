@@ -4,7 +4,7 @@ namespace Quanta;
 
 public partial class TextBox
 {
-    public class Caret : Node2D
+    private class Caret : Node2D
     {
         public float MaxTime = 0.5F;
 

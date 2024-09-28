@@ -4,7 +4,7 @@ namespace Quanta;
 
 public partial class TextBox
 {
-    public abstract class BaseText : Node2D
+    private abstract class BaseText : Node2D
     {
         public TextBoxStyle Style;
 

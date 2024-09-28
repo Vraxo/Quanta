@@ -2,7 +2,7 @@
 
 public partial class TextBox
 {
-    public class TextDisplayer : BaseText
+    private class TextDisplayer : BaseText
     {
         protected override string GetText()
         {
