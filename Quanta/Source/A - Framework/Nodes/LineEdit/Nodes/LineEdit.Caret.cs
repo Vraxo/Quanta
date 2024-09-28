@@ -15,6 +15,12 @@ public partial class LineEdit
         private byte alpha = 255;
         private LineEdit parent;
 
+        private const float arrowKeyDelay = 0.5f; // Delay before rapid movement starts
+        private const float arrowKeySpeed = 0.05f; // Speed of movement after delay
+        private float arrowKeyTimer = 0f;
+        private bool arrowKeyHeld = false;
+        private bool moveRight = false; // Track which direction to move
+
         public bool caretMovement = false;
 
         private int _x = 0;
@@ -72,33 +78,85 @@ public partial class LineEdit
             }
 
             // Handle caret movement with arrow keys
+            HandleArrowKeys();
+        }
+
+        private void HandleArrowKeys()
+        {
+            // Check if right arrow key is pressed or held
             if (Raylib.IsKeyPressed(KeyboardKey.Right))
             {
-                // If caret is at the end of visible text, scroll right
-                if (X >= parent.Text.Length - parent.textStartIndex)
+                arrowKeyHeld = true;
+                arrowKeyTimer = 0f;
+                moveRight = true; // Move right initially
+                MoveCaretRight();
+            }
+            else if (Raylib.IsKeyDown(KeyboardKey.Right) && arrowKeyHeld && moveRight)
+            {
+                arrowKeyTimer += Raylib.GetFrameTime();
+
+                if (arrowKeyTimer >= arrowKeyDelay)
                 {
-                    if (parent.textStartIndex < parent.Text.Length)
+                    // Move rapidly after delay
+                    if (arrowKeyTimer % arrowKeySpeed < Raylib.GetFrameTime())
                     {
-                        parent.textStartIndex++;
+                        MoveCaretRight();
                     }
-                }
-                else
-                {
-                    X++;
                 }
             }
 
+            // Check if left arrow key is pressed or held
             if (Raylib.IsKeyPressed(KeyboardKey.Left))
             {
-                // If caret is at the beginning of visible text, scroll left
-                if (X <= 0 && parent.textStartIndex > 0)
+                arrowKeyHeld = true;
+                arrowKeyTimer = 0f;
+                moveRight = false; // Move left initially
+                MoveCaretLeft();
+            }
+            else if (Raylib.IsKeyDown(KeyboardKey.Left) && arrowKeyHeld && !moveRight)
+            {
+                arrowKeyTimer += Raylib.GetFrameTime();
+
+                if (arrowKeyTimer >= arrowKeyDelay)
                 {
-                    parent.textStartIndex--;
+                    // Move rapidly after delay
+                    if (arrowKeyTimer % arrowKeySpeed < Raylib.GetFrameTime())
+                    {
+                        MoveCaretLeft();
+                    }
                 }
-                else if (X > 0)
+            }
+
+            if (Raylib.IsKeyReleased(KeyboardKey.Right) || Raylib.IsKeyReleased(KeyboardKey.Left))
+            {
+                arrowKeyHeld = false; // Stop moving when key is released
+            }
+        }
+
+        private void MoveCaretRight()
+        {
+            if (X >= parent.Text.Length - parent.textStartIndex)
+            {
+                if (parent.textStartIndex < parent.Text.Length)
                 {
-                    X--;
+                    parent.textStartIndex++;
                 }
+            }
+            else
+            {
+                X++;
+            }
+        }
+
+        private void MoveCaretLeft()
+        {
+            if (X <= 0 && parent.textStartIndex > 0)
+            {
+                parent.textStartIndex--;
+            }
+            else if (X > 0)
+            {
+                X--;
             }
         }
 
@@ -110,8 +168,6 @@ public partial class LineEdit
             }
             else
             {
-                //float x = mouseX - mainScene.GlobalPosition.X + mainScene.Origin.X;
-
                 float x = mouseX - parent.GlobalPosition.X + parent.Origin.X - parent.TextOrigin.X / 2;
 
                 int characterWidth = GetCharacterWidth();
@@ -119,7 +175,7 @@ public partial class LineEdit
                 X = (int)MathF.Floor(x / characterWidth);
 
                 X = X > parent.Text.Length - parent.textStartIndex ?
-                    parent.Text.Length - parent.textStartIndex:
+                    parent.Text.Length - parent.textStartIndex :
                     X;
             }
         }
