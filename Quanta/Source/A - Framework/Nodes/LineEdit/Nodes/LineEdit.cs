@@ -22,6 +22,7 @@ public partial class LineEdit : ClickableRectangle
     public bool TemporaryDefaultText { get; set; } = true;
     public bool Secret { get; set; } = false;
     public char SecretCharacter { get; set; } = '*';
+    public bool ExpandToText { get; set; } = false;
 
     public Action<LineEdit> OnUpdate = (textBox) => { };
 
@@ -62,7 +63,24 @@ public partial class LineEdit : ClickableRectangle
         OnUpdate(this);
         HandleInput();
         PasteText();
+        UpdateSizeToFitText();
         base.Update();
+    }
+
+    private void UpdateSizeToFitText()
+    {
+        if (!ExpandToText)
+        {
+            return;
+        }
+
+        int textWidth = (int)Raylib.MeasureTextEx(
+            Style.Current.Font,
+            Text,
+            Style.Current.FontSize,
+            Style.Current.TextSpacing).X;
+
+        Size = new Vector2(textWidth + TextOrigin.X * 2, Size.Y);
     }
 
     public void Insert(string input)
