@@ -2,72 +2,75 @@
 
 namespace Quanta;
 
-public class HorizontalGrabber : BaseGrabber
+public partial class HorizontalSlider
 {
-    private bool previouslyPressed = false;
-
-    protected override void UpdatePosition(bool initial = false)
+    public class HorizontalGrabber : BaseGrabber
     {
-        var parent = Parent as BaseSlider;
+        private bool previouslyPressed = false;
 
-        if (Pressed)
+        protected override void UpdatePosition(bool initial = false)
         {
-            float x = Raylib.GetMousePosition().X;
-            float y = parent.GlobalPosition.Y;
+            var parent = Parent as BaseSlider;
 
-            GlobalPosition = new(x, y);
-
-            parent.UpdatePercentageBasedOnGrabber();
-
-            previouslyPressed = true;
-        }
-        else
-        {
-            if (previouslyPressed)
+            if (Pressed)
             {
                 float x = Raylib.GetMousePosition().X;
                 float y = parent.GlobalPosition.Y;
-            
+
                 GlobalPosition = new(x, y);
-            
+
                 parent.UpdatePercentageBasedOnGrabber();
-            
-                previouslyPressed = false;
+
+                previouslyPressed = true;
             }
-        }
-
-        UpdatePosition(parent, initial);
-    }
-
-    private void UpdatePosition(BaseSlider parent, bool initial)
-    {
-        if (Raylib.IsWindowMinimized())
-        {
-            return;
-        }
-
-        float minX = parent.GlobalPosition.X;
-        float maxX = minX + parent.Size.X;
-
-        if (initial && !initialPositionSet)
-        {
-            GlobalPosition = new(minX, parent.GlobalPosition.Y);
-            initialPositionSet = true;
-        }
-        else
-        {
-            if (!Pressed)
+            else
             {
-                //float _x = maxX * (mainScene.ExternalValue / mainScene.MaxExternalValue);
-                //float _y = GlobalPosition.Y;
-                //
-                //GlobalPosition = new(_x, _y);
+                if (previouslyPressed)
+                {
+                    float x = Raylib.GetMousePosition().X;
+                    float y = parent.GlobalPosition.Y;
+
+                    GlobalPosition = new(x, y);
+
+                    parent.UpdatePercentageBasedOnGrabber();
+
+                    previouslyPressed = false;
+                }
             }
 
-            float x = Math.Clamp(GlobalPosition.X, minX, maxX);
-            float y = MathF.Ceiling(parent.GlobalPosition.Y);
+            UpdatePosition(parent, initial);
+        }
 
-            GlobalPosition = new(x, y);
+        private void UpdatePosition(BaseSlider parent, bool initial)
+        {
+            if (Raylib.IsWindowMinimized())
+            {
+                return;
+            }
+
+            float minX = parent.GlobalPosition.X;
+            float maxX = minX + parent.Size.X;
+
+            if (initial && !initialPositionSet)
+            {
+                GlobalPosition = new(minX, parent.GlobalPosition.Y);
+                initialPositionSet = true;
+            }
+            else
+            {
+                if (!Pressed)
+                {
+                    //float _x = maxX * (mainScene.ExternalValue / mainScene.MaxExternalValue);
+                    //float _y = GlobalPosition.Y;
+                    //
+                    //GlobalPosition = new(_x, _y);
+                }
+
+                float x = Math.Clamp(GlobalPosition.X, minX, maxX);
+                float y = MathF.Ceiling(parent.GlobalPosition.Y);
+
+                GlobalPosition = new(x, y);
+            }
         }
     }
 }

@@ -2,39 +2,42 @@
 
 namespace Quanta;
 
-public class VerticalGrabber : BaseGrabber
+public partial class VerticalSlider
 {
-    protected override void UpdatePosition(bool initial = false)
+    public class VerticalGrabber : BaseGrabber
     {
-        BaseSlider parent = Parent as BaseSlider;
-
-        if (Pressed)
+        protected override void UpdatePosition(bool initial = false)
         {
-            GlobalPosition = new(parent.GlobalPosition.X, Raylib.GetMousePosition().Y);
-            parent.UpdatePercentageBasedOnGrabber();
+            BaseSlider parent = Parent as BaseSlider;
+
+            if (Pressed)
+            {
+                GlobalPosition = new(parent.GlobalPosition.X, Raylib.GetMousePosition().Y);
+                parent.UpdatePercentageBasedOnGrabber();
+            }
+
+            UpdatePositionVertical(parent, initial);
         }
 
-        UpdatePositionVertical(parent, initial);
-    }
-
-    private void UpdatePositionVertical(BaseSlider parent, bool initial)
-    {
-        if (Raylib.IsWindowMinimized())
+        private void UpdatePositionVertical(BaseSlider parent, bool initial)
         {
-            return;
-        }
+            if (Raylib.IsWindowMinimized())
+            {
+                return;
+            }
 
-        float minY = parent.GlobalPosition.Y - parent.Origin.Y;
-        float maxY = minY + parent.Size.Y;
+            float minY = parent.GlobalPosition.Y - parent.Origin.Y;
+            float maxY = minY + parent.Size.Y;
 
-        if (initial && !initialPositionSet)
-        {
-            GlobalPosition = new(parent.GlobalPosition.X, minY);
-            initialPositionSet = true;
-        }
-        else
-        {
-            GlobalPosition = new(parent.GlobalPosition.X, Math.Clamp(GlobalPosition.Y, minY, maxY));
+            if (initial && !initialPositionSet)
+            {
+                GlobalPosition = new(parent.GlobalPosition.X, minY);
+                initialPositionSet = true;
+            }
+            else
+            {
+                GlobalPosition = new(parent.GlobalPosition.X, Math.Clamp(GlobalPosition.Y, minY, maxY));
+            }
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿namespace Quanta;
 
-public abstract class BaseSlider : ClickableRectangle
+public abstract partial class BaseSlider : ClickableRectangle
 {
+    #region [ - - - Properties & Fields - - - ]
+
     public float InitialPercentage { get; set; } = -1;
     public float DefaultPercentage { get; set; } = 0;
     public float MaxExternalValue  { get; set; } = 0;
@@ -55,6 +57,8 @@ public abstract class BaseSlider : ClickableRectangle
             }
         }
     }
+
+    #endregion
 
     public BaseSlider()
     {
