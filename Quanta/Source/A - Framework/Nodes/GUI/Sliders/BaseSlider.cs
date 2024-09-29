@@ -93,7 +93,7 @@ public abstract partial class BaseSlider : ClickableRectangle
         base.Start();
     }
 
-    private void OnSizeChanged(object? sender, EventArgs e)
+    private void OnSizeChanged(object? sender, Vector2 e)
     {
         MoveGrabberToPercentage(Percentage);
     }

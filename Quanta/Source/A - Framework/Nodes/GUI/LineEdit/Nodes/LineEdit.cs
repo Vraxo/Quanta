@@ -24,6 +24,8 @@ public partial class LineEdit : ClickableRectangle
     public char SecretCharacter { get; set; } = '*';
     public bool ExpandToText { get; set; } = false;
 
+    public int TextStartIndex = 0;
+
     public Action<LineEdit> OnUpdate = (textBox) => { };
 
     public event EventHandler? FirstCharacterEntered;
@@ -40,6 +42,8 @@ public partial class LineEdit : ClickableRectangle
     private float backspaceTimer = 0f;
     private bool backspaceHeld = false;
 
+    private float previousWidth = 0;
+
     #endregion
 
     public LineEdit()
@@ -49,6 +53,8 @@ public partial class LineEdit : ClickableRectangle
 
     public override void Start()
     {
+        SizeChanged += OnSizeChanged;
+
         Style.Pressed.FillColor = ThemeLoader.Instance.Colors["TextBoxPressedFill"];
         Style.Pressed.OutlineThickness = 1;
         Style.Pressed.OutlineColor = ThemeLoader.Instance.Colors["Accent"];
@@ -56,6 +62,15 @@ public partial class LineEdit : ClickableRectangle
         caret = GetNode<Caret>("Caret");
 
         base.Start();
+    }
+
+    private void OnSizeChanged(object? sender, Vector2 e)
+    {
+        if (previousWidth != e.X)
+        {
+            previousWidth = e.X;
+            TextStartIndex = 0;
+        }
     }
 
     public override void Update()
@@ -168,8 +183,20 @@ public partial class LineEdit : ClickableRectangle
                 caret.X = Text.Length;
             }
 
-            Text = Text.Insert(caret.X, ((char)key).ToString());
-            caret.X++;
+            Text = Text.Insert(caret.X + TextStartIndex, ((char)key).ToString());
+
+            if (Text.Length > GetDisplayableCharactersCount() && caret.X != 0)
+            {
+                TextStartIndex++;
+            }
+
+            if (caret.X != GetDisplayableCharactersCount() && TextStartIndex == 0)
+            {
+                caret.X++;
+            }
+
+            //caret.X++;
+            
             TextChanged?.Invoke(this, Text);
 
             if (Text.Length == 1)
@@ -239,8 +266,25 @@ public partial class LineEdit : ClickableRectangle
 
         if (Text.Length > 0 && caret.X > 0)
         {
-            Text = Text.Remove(caret.X - 1, 1);
-            caret.X--;
+            Text = Text.Remove(caret.X - 1 + TextStartIndex, 1);
+
+            if (Text.Length % GetDisplayableCharactersCount() <= GetDisplayableCharactersCount())
+            {
+                if (TextStartIndex > 0)
+                {
+                    TextStartIndex--;
+                }
+            }
+
+            //if (caret.X != GetDisplayableCharactersCount() || Text.Length < GetDisplayableCharactersCount())
+            //{
+            //    caret.X--;
+            //}
+
+            if (caret.X != GetDisplayableCharactersCount() && TextStartIndex == 0)
+            {
+                caret.X--;
+            }
         }
 
         RevertTextToDefaultIfEmpty();
@@ -285,5 +329,20 @@ public partial class LineEdit : ClickableRectangle
         {
             Text = DefaultText;
         }
+    }
+
+    public int GetDisplayableCharactersCount()
+    {
+        float oneCharacterWidth = Raylib.MeasureTextEx(
+            Style.Current.Font,
+            ".",
+            Style.Current.FontSize,
+            Style.Current.TextSpacing).X;
+
+        float avaiableWidth = Size.X * 0.9f;
+
+        int displayableCharactersCount = (int)(avaiableWidth / oneCharacterWidth);
+
+        return displayableCharactersCount;
     }
 }

@@ -20,7 +20,7 @@ public class GridContainer : Node2D
         UpdateLayout();
 
         Size = ItemSize * Cells * Scale;
-        Position = new(Window.Size.X / 2, Window.Size.Y * 0.65f);
+        Position = new(Screen.Size.X / 2, Screen.Size.Y * 0.65f);
 
         base.Update();
     }

@@ -29,7 +29,7 @@ public class Node2D : Node
     public bool Visible { get; set; } = true;
     public bool ReadyForVisibility = false;
 
-    public event EventHandler? SizeChanged;
+    public event EventHandler<Vector2>? SizeChanged;
 
     private Vector2 _size = Vector2.Zero;
     public Vector2 Size
@@ -39,7 +39,7 @@ public class Node2D : Node
         set
         {
             _size = value;
-            SizeChanged?.Invoke(this, EventArgs.Empty);
+            SizeChanged?.Invoke(this, Size);
         }
     }
 

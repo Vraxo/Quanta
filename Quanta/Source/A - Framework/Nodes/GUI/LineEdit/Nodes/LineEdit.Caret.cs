@@ -2,18 +2,24 @@
 
 namespace Quanta;
 
-public partial class LineEdit
+public partial class LineEdit : ClickableRectangle
 {
     private class Caret : Node2D
     {
         public float MaxTime = 0.5F;
-
         private const int minTime = 0;
         private const byte minAlpha = 0;
         private const byte maxAlpha = 255;
         private float timer = 0;
         private byte alpha = 255;
         private LineEdit parent;
+
+        private float arrowKeyTimer = 0f;
+        private const float arrowKeyDelay = 0.5f; 
+        private const float arrowKeySpeed = 0.05f;
+
+        private bool arrowKeyHeld = false;
+        private bool movingRight = false;
 
         private int _x = 0;
         public int X
@@ -24,7 +30,7 @@ public partial class LineEdit
             {
                 if (value > _x)
                 {
-                    if (_x < parent.Text.Length)
+                    if (_x < Math.Min(parent.Text.Length, parent.GetDisplayableCharactersCount()))
                     {
                         _x = value;
                     }
@@ -72,20 +78,74 @@ public partial class LineEdit
 
         private void HandleInput()
         {
+            // Check for initial arrow key press
+            if (Raylib.IsKeyPressed(KeyboardKey.Right))
+            {
+                arrowKeyHeld = true;
+                movingRight = true;
+                arrowKeyTimer = 0f;
+                MoveCaretRight();
+            }
+            else if (Raylib.IsKeyPressed(KeyboardKey.Left))
+            {
+                arrowKeyHeld = true;
+                movingRight = false;
+                arrowKeyTimer = 0f;
+                MoveCaretLeft();
+            }
+
+            // Check if arrow key is held down
+            if (Raylib.IsKeyDown(KeyboardKey.Right) || Raylib.IsKeyDown(KeyboardKey.Left))
+            {
+                arrowKeyTimer += Raylib.GetFrameTime();
+
+                if (arrowKeyTimer >= arrowKeyDelay)
+                {
+                    if (arrowKeyTimer % arrowKeySpeed < Raylib.GetFrameTime())
+                    {
+                        if (movingRight)
+                        {
+                            MoveCaretRight();
+                        }
+                        else
+                        {
+                            MoveCaretLeft();
+                        }
+                    }
+                }
+            }
+
+            // Reset on key release
+            if (Raylib.IsKeyReleased(KeyboardKey.Right) || Raylib.IsKeyReleased(KeyboardKey.Left))
+            {
+                arrowKeyHeld = false;
+            }
+
+            // Handle mouse click for caret positioning
             if (Raylib.IsMouseButtonPressed(MouseButton.Left))
             {
                 MoveIntoPosition(Raylib.GetMousePosition().X);
             }
+        }
 
-            if (Raylib.IsKeyPressed(KeyboardKey.Right))
+        private void MoveCaretRight()
+        {
+            if (X == parent.GetDisplayableCharactersCount() && X < parent.Text.Length - parent.TextStartIndex)
             {
-                X++;
+                parent.TextStartIndex++;
             }
 
-            if (Raylib.IsKeyPressed(KeyboardKey.Left))
+            X++;
+        }
+
+        private void MoveCaretLeft()
+        {
+            if (X == 0 && parent.Text.Length > parent.GetDisplayableCharactersCount() && parent.TextStartIndex > 0)
             {
-                X--;
+                parent.TextStartIndex--;
             }
+
+            X--;
         }
 
         public void MoveIntoPosition(float mouseX)
@@ -96,17 +156,12 @@ public partial class LineEdit
             }
             else
             {
-                //float x = mouseX - mainScene.GlobalPosition.X + mainScene.Origin.X;
-
-                float x = mouseX - parent.GlobalPosition.X + parent.Origin.X - parent.TextOrigin.X / 2;
-
+                float x = mouseX - parent.GlobalPosition.X + parent.Origin.X - parent.TextOrigin.X;
                 int characterWidth = GetCharacterWidth();
-
                 X = (int)MathF.Floor(x / characterWidth);
 
-                X = X > parent.Text.Length ?
-                    parent.Text.Length :
-                    X;
+                int maxX = Math.Min(parent.GetDisplayableCharactersCount(), parent.Text.Length);
+                X = Math.Clamp(X, 0, maxX);
             }
         }
 

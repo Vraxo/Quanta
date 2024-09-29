@@ -12,7 +12,7 @@ public partial class MainScene : Node
                 var mathTextBox = GetNode<MathTextBox>("MathTextBox");
 
                 float x = mathTextBox.Position.X - mathTextBox.Size.X / 2;
-                float y = Window.Size.Y * 0.05f;
+                float y = Screen.Size.Y * 0.05f;
                 label.Position = new(x, y);
               }
         }, "LastExpressionLabel");
@@ -30,8 +30,8 @@ public partial class MainScene : Node
             },
             OnUpdate = (textBox) =>
             {
-                textBox.Position = Window.Size * new Vector2(0.5f, 0.15f);
-                textBox.Size = Window.Size * new Vector2(0.75f, 0.1f);
+                textBox.Position = Screen.Size * new Vector2(0.5f, 0.15f);
+                textBox.Size = Screen.Size * new Vector2(0.75f, 0.1f);
             },
         });
 
@@ -39,7 +39,7 @@ public partial class MainScene : Node
         {
             OnUpdate = (grid) =>
             {
-                grid.Scale = Window.Size / Window.OriginalSize;
+                grid.Scale = Screen.Size / Screen.OriginalSize;
             }
         });
 
