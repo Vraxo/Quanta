@@ -33,7 +33,7 @@ public partial class LineEdit
                 GetText(),
                 GetPosition(),
                 parent.Style.Current.FontSize,
-                parent.Style.Current.TextSpacing,
+                parent.Style.Current.FontSpacing,
                 parent.Style.Current.TextColor);
         }
 

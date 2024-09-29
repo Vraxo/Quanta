@@ -156,8 +156,9 @@ public partial class LineEdit : ClickableRectangle
             }
             else
             {
-                float x = mouseX - parent.GlobalPosition.X + parent.Origin.X - parent.TextOrigin.X;
-                int characterWidth = GetCharacterWidth();
+                float x = mouseX - (parent.GlobalPosition.X - parent.Size.X / 2) - parent.TextOrigin.X;
+
+                float characterWidth = GetCharacterWidth();
                 X = (int)MathF.Floor(x / characterWidth);
 
                 int maxX = Math.Min(parent.GetDisplayableCharactersCount(), parent.Text.Length);
@@ -196,17 +197,17 @@ public partial class LineEdit : ClickableRectangle
             return fontHeight;
         }
 
-        private int GetCharacterWidth()
+        private float GetCharacterWidth()
         {
             float textWidth = Raylib.MeasureTextEx(
                                   parent.Style.Current.Font,
-                                  parent.Text,
+                                  ".",
                                   parent.Style.Current.FontSize,
-                                  1).X;
+                                  parent.Style.Current.FontSpacing).X;
 
-            int characterWidth = (int)MathF.Ceiling(textWidth) / parent.Text.Length;
+            //int characterWidth = (int)MathF.Ceiling(textWidth) / parent.Text.Length;
 
-            return characterWidth;
+            return textWidth;
         }
 
         private Color GetColor()

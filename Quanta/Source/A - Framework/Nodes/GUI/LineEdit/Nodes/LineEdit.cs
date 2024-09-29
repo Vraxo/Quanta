@@ -93,7 +93,7 @@ public partial class LineEdit : ClickableRectangle
             Style.Current.Font,
             Text,
             Style.Current.FontSize,
-            Style.Current.TextSpacing).X;
+            Style.Current.FontSpacing).X;
 
         Size = new Vector2(textWidth + TextOrigin.X * 2, Size.Y);
     }
@@ -337,7 +337,7 @@ public partial class LineEdit : ClickableRectangle
             Style.Current.Font,
             ".",
             Style.Current.FontSize,
-            Style.Current.TextSpacing).X;
+            Style.Current.FontSpacing).X;
 
         float avaiableWidth = Size.X * 0.9f;
 
