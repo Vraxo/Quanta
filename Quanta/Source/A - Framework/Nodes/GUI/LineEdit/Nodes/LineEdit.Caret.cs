@@ -156,7 +156,7 @@ public partial class LineEdit : ClickableRectangle
             }
             else
             {
-                float x = mouseX - (parent.GlobalPosition.X - parent.Size.X / 2) - parent.TextOrigin.X;
+                float x = mouseX - (parent.GlobalPosition.X - parent.Origin.X) - parent.TextOrigin.X;
 
                 float characterWidth = GetCharacterWidth();
                 X = (int)MathF.Floor(x / characterWidth);
