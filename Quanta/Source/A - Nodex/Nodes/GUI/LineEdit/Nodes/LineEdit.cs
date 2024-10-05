@@ -195,8 +195,6 @@ public partial class LineEdit : ClickableRectangle
                 caret.X++;
             }
 
-            //caret.X++;
-            
             TextChanged?.Invoke(this, Text);
 
             if (Text.Length == 1)
@@ -331,7 +329,7 @@ public partial class LineEdit : ClickableRectangle
         }
     }
 
-    public int GetDisplayableCharactersCount()
+    private int GetDisplayableCharactersCount()
     {
         float oneCharacterWidth = Raylib.MeasureTextEx(
             Style.Current.Font,

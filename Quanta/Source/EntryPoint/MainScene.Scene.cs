@@ -20,9 +20,7 @@ public partial class MainScene : Node
         AddChild(new MathTextBox
         {
             Position = new(196, 48),
-            //OriginPreset = OriginPreset.CenterLeft,
-            Text = "General Kenobi!",
-            //AllowedCharacters = CharacterSet.Mathematics,
+            AllowedCharacters = CharacterSet.Mathematics,
             Size = new(LineEdit.DefaultSize.X, LineEdit.DefaultSize.Y * 2),
             Style = new()
             {
@@ -41,51 +39,6 @@ public partial class MainScene : Node
             OnUpdate = (grid) =>
             {
                 grid.Scale = Screen.Size / Screen.OriginalSize;
-            }
-        });
-
-        var grid = GetNode<GridContainer>("GridContainer");
-
-        grid.AddChild(new NumberButton() { Text = "(" });
-        grid.AddChild(new NumberButton() { Text = ")" });
-        grid.AddChild(new NumberButton() { Text = "★" });
-        grid.AddChild(new NumberButton() { Text = "÷" });
-
-        grid.AddChild(new NumberButton() { Text = "7" });
-        grid.AddChild(new NumberButton() { Text = "8" });
-        grid.AddChild(new NumberButton() { Text = "9" });
-        grid.AddChild(new NumberButton() { Text = "x" });
-        
-        grid.AddChild(new NumberButton() { Text = "4" });
-        grid.AddChild(new NumberButton() { Text = "5" });
-        grid.AddChild(new NumberButton() { Text = "6" });
-        grid.AddChild(new NumberButton() { Text = "-" });
-        
-        grid.AddChild(new NumberButton() { Text = "1" });
-        grid.AddChild(new NumberButton() { Text = "2" });
-        grid.AddChild(new NumberButton() { Text = "3" });
-        grid.AddChild(new NumberButton() { Text = "+" });
-        
-        grid.AddChild(new NumberButton() { Text = "^" });
-        grid.AddChild(new NumberButton() { Text = "0" });
-        grid.AddChild(new NumberButton() { Text = "." });
-        grid.AddChild(new NumberButton() 
-        {  
-            Text = "=", 
-            IsDigit = false,
-            Style = new()
-            {
-                FillColor = ThemeLoader.Instance.Colors["Accent"],
-                Pressed = new()
-                {
-                    FillColor = ThemeLoader.Instance.Colors["AccentDarker"]
-                },
-                Hover = new()
-                {
-                    FillColor = ThemeLoader.Instance.Colors["AccentLighter"]
-                },
-                Roundness = 0.5f,
-                FontSize = 32,
             }
         });
     }
